@@ -5,10 +5,13 @@ import { ObjectID } from 'bson'
 
 const addUser = async (req: NextApiRequest, res: NextApiResponse) => {
     const connect = await dbConnect()
-    const newUser = req?.body
+    const { newUser } = req?.body
     if(!newUser) return res.status(401).json({ success: false })
-    await connect.db("arive-task").collection("users").insertOne({ _id: new ObjectID(), user: newUser, hobbies: [] })
-    res.status(200).json({ success: true })
+
+    const user = { _id: new ObjectID(), user: newUser, hobbies: [] }
+    
+    await connect.db("arive-task").collection("users").insertOne(user)
+    res.status(200).json({ success: true, user })
 }
 
 export default addUser

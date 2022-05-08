@@ -1,28 +1,33 @@
 import React, { useState, FC, useEffect } from 'react'
-import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { addNewUser } from '../../features/user/userSlice'
+import { useAppDispatch, useAppSelector } from '../../redux/app/hooks'
+import { addNewUser } from '../../redux/features/user/userSlice'
 import { IUser } from '../../interface'
 import classes from './Users.module.css'
-import axios from 'axios'
-import { getUsers } from './../../features/user/userSlice'
+import { getUsers } from './../../redux/features/user/userSlice'
+import { pathOr } from 'ramda'
 
 const Users: FC<{
   setSelectedUser: (value?: IUser) => void
   selectedUser: IUser
 }> = ({ selectedUser, setSelectedUser }) => {
   const dispatch = useAppDispatch()
-  const data = useAppSelector(state => state?.user?.value)
-useEffect(() => {
-  dispatch(getUsers())
-}, [])
+  const data = useAppSelector((state) => pathOr([], ['user', 'value'], state))
+  const loading = useAppSelector((state) => pathOr(false, ['user', 'loading'], state))
+
+  useEffect(() => {
+    dispatch(getUsers())
+  }, [])
+
   const [valueOfNewUserInput, setValueOfNewUserInput] = useState<string>('')
 
   const handleAddUser = async () => {
-    
+
     if (!valueOfNewUserInput?.trim()?.length) return null
     dispatch(addNewUser(valueOfNewUserInput))
     setValueOfNewUserInput('')
+
   }
+
   return (
     <div className={classes.container}>
       <div className={classes.div_inputs_container}>
@@ -41,19 +46,21 @@ useEffect(() => {
 
       <ul className={classes.ul}>
         {!!data?.length &&
-          data?.map((d: any) => (
+          data?.map(({ _id, user, ...u }: IUser) => (
             <li
-              key={d.id}
-              className={`${classes.li} ${ selectedUser?.user === d?.user && 'active' }`}
-              onClick={() => setSelectedUser(d)}
+              key={_id}
+              className={`${classes.li} ${ selectedUser?.user === user && 'active' }`}
+              onClick={() => setSelectedUser({ _id, user, ...u })}
             >
-              {d?.user}
+              {user}
             </li>
           ))}
 
-        {!data?.length && (
+        {(!data?.length && !loading) && (
           <li className={classes.li_no_users}>No Users found</li>
         )}
+
+        {loading && <li className={classes.li_no_users}>Loading...</li>}
       </ul>
     </div>
   )

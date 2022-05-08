@@ -1,30 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import type { NextPage } from 'next'
-import Head from 'next/head'
-import classes from './Home.module.css'
-import Hobbies from '../components/Hobbies'
-import Users from '../components/Users'
+import Wrapper from '../components/wrapper'
 
-const Home: NextPage = () => {
-  const [selectedUser, setSelectedUser] = useState<any>()
-  return (
-    <section className={classes.root}>
-      <h1 className={classes.heading}>
-        User Hobbies
-      </h1>
-
-      <div className={classes.wrapper}>
-        <Users
-          selectedUser={selectedUser}
-          setSelectedUser={setSelectedUser}
-        />
-        <Hobbies
-          selectedUser={selectedUser}
-          setSelectedUser={setSelectedUser}
-        />
-      </div>
-    </section>
-  )
-}
+const Home: NextPage = () => <Wrapper />
 
 export default Home

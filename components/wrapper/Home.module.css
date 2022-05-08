@@ -9,7 +9,7 @@
     text-align: left;
     padding: 10px 0;
     text-indent: 10px;
-    background-color: #362F4B;
+    background-color: var(--main-color);
     color: #fff;
     margin: 0;
 }
@@ -19,4 +19,10 @@
     grid-template-columns: 25% 74%;
     gap: 1%;
     border: 1px solid;
+}
+
+@media (max-width: 1081px) {
+    .root {
+        width: 95%;
+    }
 }

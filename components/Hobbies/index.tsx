@@ -1,38 +1,46 @@
-import React, { useState, useId, useEffect, FC } from 'react'
-import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { addNewHobby, removeHobby } from '../../features/user/userSlice'
-import { IUser } from '../../interface'
+import React, { useState, useEffect, FC } from 'react'
+import { useAppDispatch, useAppSelector } from '../../redux/app/hooks'
+import { addNewHobby, removeHobby } from '../../redux/features/user/userSlice'
+import { IHobby, IUser, Passion } from '../../interface'
 import classes from './Hobbies.module.css'
+import { pathOr } from 'ramda'
 
 const Hobbies: FC<{ setSelectedUser: (value?: IUser) => void, selectedUser: IUser }> = ({ setSelectedUser, selectedUser }) => {
 
-  const id = useId()
   const dispatch = useAppDispatch()
-  const data = useAppSelector((state) => state?.user?.value)
-  const [valueOfNewPassionInput, setValueOfNewPassionInput] = useState<string>('')
+  const data = useAppSelector((state) => pathOr([], ['user', 'value'], state))
+  const loading = useAppSelector((state) => pathOr(false, ['user', 'loading'], state))
+
+  const [valueOfNewPassionInput, setValueOfNewPassionInput] = useState<Passion | '' | undefined>('')
   const [valueOfNewHobbyInput, setValueOfNewHobbyInput] = useState<string>('')
   const [valueOfNewYearInput, setValueOfNewYearInput] = useState<string>('')
 
   const checkIfUserIsSelected = Object.values(selectedUser || {})
 
+  const validateOnPassionValue = () : boolean => (
+    (valueOfNewPassionInput?.toLowerCase() !== Passion.LOW && valueOfNewPassionInput?.toLowerCase() !== Passion.MEDIUM && valueOfNewPassionInput?.toLowerCase() !== Passion.HIGH &&valueOfNewPassionInput?.toLowerCase() !== Passion.VERY_HIGH) 
+  )
+
   const handleAddHobby = () => {
     if (!valueOfNewPassionInput?.trim()?.length) return alert('Please Enter a passion value')
     if (!valueOfNewHobbyInput?.trim()?.length) return alert('Please Enter a hobby name')
     if (!valueOfNewYearInput?.trim()?.length) return alert('Please Enter a year for the hobby')
-    dispatch(addNewHobby({ selectedUserId: selectedUser?.id, newHobby: { passion: valueOfNewPassionInput, hobby: valueOfNewHobbyInput, year: valueOfNewYearInput, id } }))
+    if(validateOnPassionValue()) return alert('Invalid Passion Value! Please select either "low" - "medium" - "high" - "very-high"')
+
+    dispatch(addNewHobby({ userId: selectedUser?._id, hobby: { passion: valueOfNewPassionInput, hobby: valueOfNewHobbyInput, year: valueOfNewYearInput } }))
     setValueOfNewPassionInput('')
     setValueOfNewHobbyInput('')
     setValueOfNewYearInput('')
   }
 
-  const handleDeleteHobby = (id: number) => {
+  const handleDeleteHobby = (id: string) => {
     const confirm = window.confirm('Are you sure you want to delete this hobby?')
     if(!confirm) return null
-    dispatch(removeHobby({ selectedUserId: selectedUser?.id, hobbyId: id }))
+    dispatch(removeHobby({ selectedUserId: selectedUser?._id, hobbyId: id }))
   }
 
   useEffect(() => {
-    setSelectedUser(data.find(({ id }) => id === selectedUser?.id))
+    setSelectedUser(data?.find(({ _id }: IUser) => _id?.toString() === selectedUser?._id?.toString()))
   }, [data])
 
   return (
@@ -45,7 +53,7 @@ const Hobbies: FC<{ setSelectedUser: (value?: IUser) => void, selectedUser: IUse
         <input
           placeholder='Create Passion'
           className={classes.input}
-          onChange={(e) => setValueOfNewPassionInput(e.target.value)}
+          onChange={(e: any) => setValueOfNewPassionInput(e.target.value)}
           value={valueOfNewPassionInput}
         />
         <hr className={classes.hr} />
@@ -71,9 +79,9 @@ const Hobbies: FC<{ setSelectedUser: (value?: IUser) => void, selectedUser: IUse
 
       <ul className={classes.ul}>
 
-        {!!selectedUser &&
-          selectedUser?.hobbies?.map(({ id, passion, hobby, year }: any) => (
-            <li key={id} className={classes.li}>
+        {!loading &&
+          pathOr([], ['hobbies'], selectedUser).map(({ _id, passion, hobby, year }: IHobby) => (
+            <li key={_id} className={classes.li}>
               <span>Passion: {passion}</span>
 
               <span>{hobby}</span>
@@ -83,19 +91,21 @@ const Hobbies: FC<{ setSelectedUser: (value?: IUser) => void, selectedUser: IUse
               </span>
                 <button
                   className={classes.delete_btn}
-                  onClick={() => handleDeleteHobby(id)}
+                  onClick={() => handleDeleteHobby(_id)}
                 >
-                  X
+                  &#128465;
                 </button>
             </li>
           ))}
 
           {/* Msg for No Hobbies */}
-        {selectedUser && !selectedUser?.hobbies?.length && (
+        {(selectedUser && !selectedUser?.hobbies?.length && !loading) && (
           <li className={classes.li_no_hobbies}>
             No hobbies found for this user
           </li>
         )}
+
+      {loading && <li className={classes.li_no_hobbies}>Loading...</li>}
       </ul>
     </div>
   )
