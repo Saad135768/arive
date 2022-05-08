@@ -1,0 +1,22 @@
+
+.root {
+    width: 60%;
+    border: 1px solid;
+    margin: 150px auto;
+}
+
+.heading {
+    text-align: left;
+    padding: 10px 0;
+    text-indent: 10px;
+    background-color: #362F4B;
+    color: #fff;
+    margin: 0;
+}
+
+.wrapper {
+    display: grid;
+    grid-template-columns: 25% 74%;
+    gap: 1%;
+    border: 1px solid;
+}
