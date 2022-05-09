@@ -5,6 +5,7 @@ A fully-dynamic Full Stack "User Hobbies" app. Where you can add a user and crea
 ### Prerequistes
 - NPM
 - GIT
+- MongoDB
 
 ### How to Setup: 
 
