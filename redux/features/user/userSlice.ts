@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { pathOr } from 'ramda'
-import { IHobby, IUser, IUserState } from '../../interface'
+import { IHobby, IUser, IUserState } from '../../../interface'
 import { fetchUser, addHobby, addUser, deleteHobby } from './userAPI'
 
 
