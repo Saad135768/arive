@@ -29,7 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           }
 
           :root{
-            --main-color: #362F4B
+            --main-color: #362F4B;
           }
 
           .active {
@@ -42,9 +42,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           `}
         </style>
       </Head>
-      <Provider store={store}>
-        <Component {...pageProps} />
-      </Provider>
+      <Component {...pageProps} />
     </>
   )
 }

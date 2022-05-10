@@ -3,6 +3,7 @@
   padding-right: 10px;
   height: 200px;
   overflow-y: auto;
+  overflow-x: hidden;
   position: relative;
 }
 
@@ -90,4 +91,19 @@
 .container::-webkit-scrollbar-thumb {
   background-color: darkgrey;
   outline: 1px solid slategrey;
+}
+
+@media (max-width: 800px) {
+  .container {
+      font-size: 12px;
+  }
+  .container .ul .li .delete_btn{
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 575px) {
+  .container {
+    border-top: 1px solid;
+  }
 }

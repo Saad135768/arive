@@ -26,3 +26,10 @@
         width: 95%;
     }
 }
+
+@media (max-width: 575px) {
+    .wrapper {
+        display: block;
+    }
+   
+}
